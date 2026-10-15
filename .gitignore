@@ -1,0 +1,21 @@
+# Sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Chaves e segredos (NUNCA suba isso)
+*.pem
+*.key
+id_rsa*
+.env
+*.secret
+
+# PDF gerado (opcional, se quiser versionar só o .md)
+# trabalho-devops.pdf
+
+# Node / Python etc (caso use)
+node_modules/
+__pycache__/
+*.pyc
+venv/
