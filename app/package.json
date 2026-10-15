@@ -1,0 +1,14 @@
+{
+  "name": "devops-app",
+  "version": "1.0.0",
+  "description": "App mínimo para o trabalho de DevOps - Oracle Cloud + GitHub Actions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

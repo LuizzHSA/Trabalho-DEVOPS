@@ -1,0 +1,58 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # permite rodar manualmente na aba Actions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            APP_DIR=/var/www/app
+
+            # Cria o diretório se não existir
+            if [ ! -d "$APP_DIR" ]; then
+              sudo mkdir -p $APP_DIR
+              sudo chown $USER:$USER $APP_DIR
+            fi
+
+            cd $APP_DIR
+
+            # Se ainda não for um repositório git, clona
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/LuizzHSA/Trabalho-DEVOPS.git .
+            else
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+
+            # Vai para a pasta do app
+            cd app
+
+            # Instala dependências (caso tenha no futuro)
+            if [ -f package.json ]; then
+              npm install --production
+            fi
+
+            # Reinicia ou inicia com pm2
+            if command -v pm2 &> /dev/null; then
+              pm2 restart devops-app || pm2 start server.js --name devops-app
+              pm2 save
+            else
+              echo "pm2 não encontrado. Instale com: sudo npm install -g pm2"
+              exit 1
+            fi
+
+            echo "Deploy concluído com sucesso!"
