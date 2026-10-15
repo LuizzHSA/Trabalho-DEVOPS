@@ -1,63 +1,45 @@
 # 06 – Escolher o app pronto
 
 ## Objetivo
-Escolher um aplicativo existente, com licença permissiva, que seja simples de rodar e adequado para demonstrar o pipeline de deploy.
+Escolher um aplicativo simples, com licença permissiva, adequado para rodar no Render Free Tier.
 
 ## Nome, origem e licença do app
 
-- **Nome**: Go Static Site / exemplo simples com Node.js ou Python
-- **Recomendação principal**: um app estático ou uma API mínima
-
-### Opção recomendada (fácil e limpa)
-
-**App escolhido:** um site estático simples servido pelo próprio nginx **ou** um app Node.js mínimo.
-
-Para facilitar o trabalho, a recomendação é:
-
-**Nome:** `hello-devops` (app mínimo criado para o trabalho)  
-**Licença:** MIT  
-**Origem:** este próprio repositório (pasta `app/`)
-
-### Alternativa popular (caso queira usar algo existente)
-- **Nome**: [httpbin](https://github.com/postmanlabs/httpbin) ou um app Flask/Express simples
-- **Licença**: Apache 2.0 / MIT
+- **Nome**: devops-app
+- **Origem**: criado neste repositório (`app/`)
+- **Licença**: MIT
 
 ## Motivo da escolha
-- Simples de entender e de publicar
-- Não exige banco de dados
-- Roda com poucos recursos (importante no Always Free)
-- Facilita a demonstração do CI/CD
-- Licença permissiva (MIT)
+- Extremamente leve (Node.js puro, sem dependências pesadas)
+- Roda perfeitamente no plano Free do Render
+- Fácil de entender e de modificar
+- Permite demonstrar deploy automático com clareza
+- Licença MIT permite uso livre
 
 ## Requisitos para rodar
 
-| Item                  | Valor                          |
-|-----------------------|--------------------------------|
-| Runtime               | Node.js 20+ ou apenas nginx    |
-| Porta                 | 3000 (app) ou 80 (nginx)       |
-| Banco de dados        | Nenhum                         |
-| Variáveis de ambiente | Nenhuma obrigatória            |
-| Memória mínima        | < 100 MB                       |
+| Item                  | Valor                    |
+|-----------------------|--------------------------|
+| Runtime               | Node.js 18+              |
+| Porta                 | 3000 (ou process.env.PORT)|
+| Banco de dados        | Nenhum                   |
+| Variáveis de ambiente | Nenhuma obrigatória      |
+| Memória               | Muito baixa (< 50 MB)    |
 
-## Plano de publicação no servidor
-
-1. Colocar o código na pasta `/var/www/app` ou similar
-2. Se for Node: usar `pm2` para manter o processo vivo
-3. Configurar nginx como proxy reverso (porta 80 → 3000)
-4. Garantir que o serviço inicie automaticamente no boot
+## Plano de publicação
+1. Código já está no repositório
+2. Conectar o repositório ao Render
+3. Definir Root Directory = `app`
+4. Build: `npm install`
+5. Start: `node server.js`
 
 ## Evidências
-
-![Página de origem do app com a licença visível](../images/06-licenca-app.png)
-
-> **Ação necessária**: Se usar um app externo, tire o print da licença. Se criar o próprio, documente a licença MIT no README do app.
-
-## Problemas encontrados e soluções
-- Nenhum até o momento.
+![Código do app no repositório](../images/06-codigo-app.png)
+![Licença MIT](../images/06-licenca.png)
 
 ## Fontes consultadas
-- Repositórios open source com licença MIT/Apache
+- Este repositório
 - Uso de IA: Grok (xAI)
 
 ## Conclusão do capítulo
-Foi escolhido um aplicativo simples, leve e com licença permissiva, adequado tanto para publicação manual quanto para o pipeline de CI/CD.
+Foi escolhido um aplicativo mínimo, leve e com licença permissiva, ideal para o ambiente gratuito do Render.

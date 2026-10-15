@@ -1,7 +1,7 @@
-# 08 – Montar o CI/CD com GitHub
+# 08 – Montar o CI/CD com GitHub + Render
 
 ## Objetivo
-Configurar um pipeline com GitHub Actions que, a cada push na branch main, faça o deploy automático do aplicativo no servidor Oracle Cloud.
+Configurar o deploy automático de forma que todo push na branch main atualize o aplicativo no Render sem intervenção manual.
 
 ## Link do repositório
 [https://github.com/LuizzHSA/Trabalho-DEVOPS](https://github.com/LuizzHSA/Trabalho-DEVOPS)
@@ -11,92 +11,48 @@ Configurar um pipeline com GitHub Actions que, a cada push na branch main, faça
 ```text
 Desenvolvedor
      |
-  git push
+  git push (main)
      |
      v
 GitHub Repository
      |
      v
-GitHub Actions (workflow)
+Render (auto-deploy ativado)
      |
-     +---> Checkout do código
-     +---> (opcional) Build / Testes
-     +---> Deploy via SSH
-              |
-              v
-        Servidor Oracle
-              |
-              v
-         App atualizado
+     +---> Build (npm install)
+     +---> Start (node server.js)
+     |
+     v
+App atualizado em produção
+https://devops-app-x1r7.onrender.com/
 ```
 
-## Descrição de cada etapa do workflow
+## Como o CI/CD funciona no Render
 
-| Etapa              | Função                                                |
-|--------------------|--------------------------------------------------------|
-| trigger (on: push) | Dispara o pipeline a cada push na main                 |
-| checkout           | Baixa o código mais recente                            |
-| setup-node         | Prepara o ambiente Node.js (se necessário)             |
-| deploy             | Conecta via SSH e atualiza o código + reinicia o app   |
+O Render possui integração nativa com GitHub. Ao conectar o repositório e ativar o **Auto-Deploy**, qualquer push na branch configurada dispara automaticamente:
 
-## Segredos usados e como foram protegidos
+1. Clone do código
+2. Execução do Build Command
+3. Execução do Start Command
+4. Substituição da versão anterior (zero-downtime quando possível)
 
-| Segredo            | Conteúdo                              | Onde fica                          |
-|--------------------|---------------------------------------|------------------------------------|
-| `SSH_PRIVATE_KEY`  | Chave privada exclusiva do pipeline   | GitHub → Settings → Secrets        |
-| `HOST`             | IP público do servidor                | GitHub → Settings → Secrets        |
-| `USERNAME`         | Usuário SSH (ubuntu ou outro)         | GitHub → Settings → Secrets        |
+Não foi necessário criar workflow manual no `.github/workflows` para o deploy principal, pois o próprio Render faz esse papel.
 
-**Importante:** Nunca usar a chave SSH pessoal no pipeline. Gerar uma chave específica só para o deploy.
+## Segredos e proteção
 
-## Exemplo de workflow (`.github/workflows/deploy.yml`)
-
-```yaml
-name: Deploy to Oracle Cloud
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /var/www/app
-            git pull origin main
-            # npm install --production   # se for Node
-            pm2 restart devops-app || pm2 start app.js --name devops-app
-```
+- A conexão é feita via OAuth do GitHub
+- O Render só tem acesso ao repositório autorizado
+- Não há chaves SSH expostas no repositório
 
 ## Evidências
-
-![Execução com sucesso na aba Actions](../images/08-actions-sucesso.png)
-
-![Falha tratada na aba Actions](../images/08-actions-falha.png)
-
+![Auto-Deploy ativado no Render](../images/08-auto-deploy.png)
+![Deploy disparado por push](../images/08-deploy-por-push.png)
 ![App antes do push](../images/08-app-antes.png)
-
 ![App depois do push](../images/08-app-depois.png)
 
-> **Ação necessária**: Após configurar o pipeline, fazer um push de teste e capturar os prints.
-
-## Problemas encontrados e soluções
-- Ainda não executado.
-
 ## Fontes consultadas
-- Documentação oficial do GitHub Actions
-- Ação `appleboy/ssh-action`
+- Documentação do Render (Auto-Deploy)
 - Uso de IA: Grok (xAI)
 
 ## Conclusão do capítulo
-O pipeline de CI/CD foi configurado. Agora qualquer push na branch main atualiza automaticamente o aplicativo no servidor.
+O pipeline de CI/CD está funcionando. Qualquer alteração enviada para a branch main é automaticamente publicada no Render.

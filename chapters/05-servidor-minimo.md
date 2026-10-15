@@ -1,67 +1,44 @@
-# 05 – Deixar o servidor mínimo e seguro
+# 05 – Configurar o serviço de forma mínima e segura
 
 ## Objetivo
-Instalar apenas o necessário, configurar firewall em duas camadas e deixar o servidor pronto para receber o aplicativo, reduzindo a superfície de ataque.
+Manter o serviço o mais simples possível, usando apenas o necessário e aproveitando as proteções nativas do Render.
 
-## Lista do que foi instalado e por quê
+## O que foi configurado
 
-| Pacote / Ferramenta     | Motivo                                              |
-|-------------------------|-----------------------------------------------------|
-| Atualizações do sistema | Correções de segurança                             |
-| ufw                     | Firewall do sistema operacional                     |
-| nginx                   | Servidor web / proxy reverso leve                   |
-| curl / wget             | Ferramentas básicas de diagnóstico                  |
-| git                     | Necessário para clonar o repositório do app         |
+| Item                    | Configuração                     | Motivo |
+|-------------------------|----------------------------------|--------|
+| Runtime                 | Node                             | App é Node.js |
+| Porta                   | 3000 (padrão do app)             | Render detecta automaticamente |
+| HTTPS                   | Automático                       | Fornecido pelo Render |
+| Variáveis de ambiente   | Nenhuma sensível                 | App não precisa de secrets |
+| Auto-Deploy             | Ativado                          | Deploy a cada push |
 
-## Comandos usados (reproduzíveis)
+## Comandos / configuração usada
 
-```bash
-# Atualizar o sistema
-sudo apt update && sudo apt upgrade -y
+No painel do Render:
+- Root Directory: `app`
+- Build Command: `npm install`
+- Start Command: `node server.js`
 
-# Instalar pacotes essenciais
-sudo apt install -y nginx ufw git curl
-
-# Configurar firewall do sistema (segunda camada)
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-
-# Verificar status
-sudo ufw status verbose
-
-# Habilitar e iniciar o nginx
-sudo systemctl enable nginx
-sudo systemctl start nginx
+No código do app:
+```js
+const PORT = process.env.PORT || 3000;
 ```
+O Render injeta a variável `PORT` automaticamente.
 
-## Regras de firewall nas duas camadas
-
-### Camada 1 – Security List (Oracle Cloud)
-- Porta 22/TCP (SSH)
-- Porta 80/TCP (HTTP)
-- Porta 443/TCP (HTTPS)
-
-### Camada 2 – ufw (dentro do sistema)
-- Mesmas portas liberadas
-- Política padrão: negar entrada, permitir saída
+## Proteções nativas aproveitadas
+- HTTPS obrigatório
+- Isolamento de container
+- Deploy apenas a partir do repositório autorizado
+- Logs disponíveis no painel
 
 ## Evidências
-
-![Resposta HTTP do servidor no navegador](../images/05-http-resposta.png)
-
-> **Ação necessária**: Acessar o IP público no navegador e tirar print da página padrão do nginx (ou da página de teste).
-
-## Problemas encontrados e soluções
-- Ainda não executado (depende dos capítulos anteriores).
+![Configuração do serviço](../images/05-config-render.png)
+![Resposta HTTP do app](../images/05-http-resposta.png)
 
 ## Fontes consultadas
-- Documentação do Ubuntu Server
-- Documentação do nginx e ufw
+- Documentação do Render
 - Uso de IA: Grok (xAI)
 
 ## Conclusão do capítulo
-O servidor está atualizado, com firewall em duas camadas e com um servidor web mínimo respondendo. Está pronto para receber o aplicativo real.
+O serviço está configurado de forma mínima e segura, aproveitando os recursos nativos do Render sem adicionar complexidade desnecessária.

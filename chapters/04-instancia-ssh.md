@@ -1,52 +1,36 @@
-# 04 – Criar a instância e acessar por SSH
+# 04 – Criar o serviço e fazer o primeiro deploy
 
 ## Objetivo
-Criar a instância Always Free e acessá-la exclusivamente por chave SSH (nunca por senha).
+Criar o Web Service no Render e realizar o primeiro deploy a partir do repositório GitHub.
 
 ## Configuração escolhida e justificação
 
-| Item                 | Escolha                          | Justificativa                                      |
-|----------------------|----------------------------------|----------------------------------------------------|
-| Sistema Operacional  | Ubuntu 22.04 Minimal             | Leve, bem documentado e amplamente usado           |
-| Shape                | VM.Standard.A1.Flex (ARM)        | Melhor custo-benefício dentro do Always Free       |
-| OCPU / Memória       | 2 OCPU / 12 GB                   | Usa todo o limite Always Free de ARM               |
-| Disco (Boot Volume)  | 50 GB                            | Dentro do limite de 200 GB e suficiente            |
-| Rede                 | Subnet pública criada no cap. 03 | Necessária para ter IP público                     |
-| Chave SSH            | Par de chaves gerado localmente  | Acesso seguro sem senha                            |
+| Item              | Escolha                          | Justificativa                              |
+|-------------------|----------------------------------|--------------------------------------------|
+| Tipo de serviço   | Web Service                      | Adequado para aplicação Node.js            |
+| Runtime           | Node                             | App escrito em Node.js                     |
+| Root Directory    | `app`                            | Código fica dentro da pasta app/           |
+| Build Command     | `npm install`                    | Instala dependências                       |
+| Start Command     | `node server.js`                 | Inicia o servidor                          |
+| Plano             | Free                             | Atende ao requisito de ambiente gratuito   |
 
-## Explicação de chave pública e privada
+## Acesso ao serviço
 
-- **Chave privada** (`.pem` ou `id_rsa`): fica **somente** na sua máquina local. Nunca deve ser enviada para o GitHub, para o servidor ou compartilhada.
-- **Chave pública** (`.pub`): é colocada na instância no momento da criação. O servidor usa ela para autenticar quem possui a chave privada correspondente.
+Diferente do Oracle Cloud, não existe SSH. O acesso é feito exclusivamente via HTTPS pelo link gerado pelo Render.
 
-Local da chave privada (exemplo):
-```bash
-~/.ssh/oracle_devops_key
-```
-
-Comando para gerar o par de chaves:
-```bash
-ssh-keygen -t ed25519 -f ~/.ssh/oracle_devops_key -C "oracle-devops"
-```
+**URL do serviço:** https://devops-app-x1r7.onrender.com/
 
 ## Evidências
-
-![Instância em execução no console](../images/04-instancia-running.png)
-
-![Acesso SSH funcionando](../images/04-ssh-acesso.png)
-
-> **Ação necessária**: Tirar os prints após a instância estar Running e após conseguir conectar via SSH.
+![Serviço criado e em execução](../images/04-servico-render.png)
+![Primeiro deploy com sucesso](../images/04-primeiro-deploy.png)
+![App respondendo no navegador](../images/04-app-no-ar.png)
 
 ## Problemas encontrados e soluções
-
-Problemas comuns neste capítulo:
-- **Out of host capacity**: falta de capacidade na região para o shape ARM. Solução: tentar outro Availability Domain, reduzir para 1 OCPU ou tentar em outro horário.
-- Erro de permissão na chave: `chmod 400 ~/.ssh/oracle_devops_key`
+- Nenhum problema relevante. O deploy foi bem-sucedido na primeira tentativa.
 
 ## Fontes consultadas
-- Documentação oficial Oracle Compute
-- Man pages do ssh-keygen
+- Documentação do Render (Web Services)
 - Uso de IA: Grok (xAI)
 
 ## Conclusão do capítulo
-A instância foi criada dentro dos limites Always Free e o acesso é feito exclusivamente por chave SSH. O servidor está pronto para ser endurecido no próximo capítulo.
+O serviço foi criado e o aplicativo está acessível publicamente. O próximo passo é garantir que o ambiente esteja mínimo e documentar o processo.

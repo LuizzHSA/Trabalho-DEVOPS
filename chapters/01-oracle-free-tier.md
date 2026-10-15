@@ -1,85 +1,66 @@
-# 01 – Entender o Oracle Cloud Free Tier
+# 01 – Entender o ambiente gratuito (Render Free Tier)
 
 ## Objetivo
-Pesquisar e compreender o que é realmente gratuito no Oracle Cloud Free Tier, quais recursos são Always Free, os limites e os riscos de cobrança.
+Pesquisar e compreender o que é realmente gratuito no Render Free Tier, quais são os limites e os riscos envolvidos.
 
 ## O que foi feito
-- Leitura da documentação oficial da Oracle
-- Análise dos recursos Always Free (compute, storage, network)
-- Identificação dos principais riscos de cobrança
-- Comparação com outro provedor de nuvem (AWS)
+- Pesquisa da documentação oficial do Render
+- Análise dos recursos do plano Free
+- Identificação das limitações (cold start, horas mensais)
+- Comparação com Oracle Cloud Free Tier e outras opções
 
-## Resumo do Free Tier
+## Resumo do Free Tier do Render
 
-O Oracle Cloud Free Tier é composto por duas partes distintas:
+O Render oferece um plano **Free** permanente com as seguintes características:
 
-1. **Always Free** – recursos que permanecem gratuitos **indefinidamente**, desde que a conta esteja ativa e em conformidade com os termos.
-2. **Free Trial** – crédito de **US$ 300** válido por **30 dias** para testar praticamente todos os serviços da Oracle Cloud.
+- Web Services gratuitos
+- 750 horas de instância por mês (suficiente para 1 serviço 24/7)
+- SSL automático
+- Deploy automático a partir do GitHub
+- **Não exige cartão de crédito** na maioria dos casos
 
-Quando o período de trial termina:
-- Todos os recursos que **não** forem Always Free são automaticamente excluídos.
-- Os recursos Always Free continuam funcionando normalmente.
+### Limitações importantes
+- O serviço **dorme** após 15 minutos sem tráfego
+- Ao receber uma nova requisição, demora cerca de 30–60 segundos para “acordar” (cold start)
+- 512 MB de RAM e 0.1 CPU no plano Free
 
-## Tabela dos recursos Always Free (valores atuais – 2026)
+## Tabela dos recursos Free
 
-| Recurso                  | Tipo / Shape                      | Limite Always Free                          | Observação |
-|--------------------------|-----------------------------------|---------------------------------------------|----------|
-| Compute AMD              | VM.Standard.E2.1.Micro            | 2 instâncias                                | 1/8 OCPU + 1 GB RAM cada |
-| Compute ARM (Ampere A1)  | VM.Standard.A1.Flex               | 1.500 OCPU-hours + 9.000 GB-hours por mês  | Equivale a **2 OCPUs + 12 GB RAM** contínuos |
-| Block Volume             | Armazenamento em bloco            | 200 GB no total                             | Mínimo ~47 GB por boot volume |
-| Object Storage           | Bucket                            | 20 GB                                       | |
-| Outbound Data Transfer   | Transferência de saída            | 10 TB / mês                                 | |
-| Load Balancer            | Flexible                          | 1 instância (10 Mbps)                       | |
-| Autonomous Database      | ATP / ADW / JSON                  | 2 bancos (20 GB cada)                       | |
-| VCN                      | Rede virtual                      | 2 VCNs                                      | |
+| Recurso              | Limite Free                          | Observação |
+|----------------------|--------------------------------------|----------|
+| Web Service          | 1 instância                          | Dorme após 15 min idle |
+| Horas de instância   | 750 horas/mês                        | Suficiente para 1 app 24/7 |
+| RAM                  | 512 MB                               | |
+| CPU                  | 0.1                                  | |
+| Build minutes        | 500/mês                              | |
+| Bandwidth            | ~100 GB/mês                          | |
+| SSL                  | Grátis e automático                  | |
+| Deploy do GitHub     | Sim, automático                      | |
 
-> **Fonte oficial**: [Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
+## Riscos e como evitá-los
 
-**Nota importante (2026):** O limite de ARM foi reduzido. Antigamente era 4 OCPUs / 24 GB. Atualmente é **2 OCPUs / 12 GB** no total.
+- Ultrapassar as 750 horas (improvável com 1 serviço)
+- Exceder bandwidth (raro em trabalho acadêmico)
+- Dependência do cold start (documentar essa limitação)
 
-## Riscos de cobrança e como evitá-los
+## Comparação com Oracle Cloud Always Free
 
-### Principais armadilhas
-- Criar instâncias com shapes que **não** são elegíveis a Always Free
-- Aumentar o disco além de 200 GB
-- Criar Load Balancer, Autonomous Database ou outros serviços e esquecer de apagar
-- Fazer upgrade para Pay As You Go e depois criar recursos pagos sem controle
-- Deixar recursos do trial rodando após o crédito acabar
-
-### Como se proteger
-1. Ativar **Budget Alert** com valor baixo (US$ 1) logo no início
-2. Sempre verificar se o recurso está marcado como **Always Free-eligible** antes de criar
-3. Preferir os shapes `VM.Standard.A1.Flex` (ARM) ou `VM.Standard.E2.1.Micro` (AMD)
-4. Revisar periodicamente a lista de recursos na conta
-5. Não fazer upgrade para Pay As You Go a menos que realmente precise
-
-## Comparação com AWS Free Tier
-
-| Critério                | Oracle Always Free                      | AWS Free Tier                              |
-|-------------------------|-----------------------------------------|--------------------------------------------|
-| Duração                 | Para sempre                             | Maioria dos serviços: 12 meses             |
-| Compute                 | 2× Micro AMD ou 2 OCPU ARM              | 750 horas/mês de t2.micro / t3.micro       |
-| Armazenamento           | 200 GB                                  | 30 GB EBS                                  |
-| Transferência de saída  | 10 TB/mês                               | 100 GB/mês                                 |
-| Banco de dados          | 2× Autonomous (20 GB)                   | RDS 750h + 20 GB                           |
-| Facilidade de uso       | Mais trabalhoso                         | Mais simples e documentado                 |
-| Risco de cobrança       | Médio (principalmente se errar o shape) | Alto (muita gente esquece recursos ligados)|
-| Capacidade garantida    | Não (pode faltar host capacity)         | Mais estável                               |
+| Critério              | Render Free                     | Oracle Always Free              |
+|-----------------------|---------------------------------|---------------------------------|
+| Cartão necessário     | Geralmente não                  | Sim                             |
+| SSH / controle total  | Não                             | Sim                             |
+| Cold start            | Sim (15 min)                    | Não                             |
+| Facilidade de deploy  | Muito alta                      | Média                           |
+| Recursos de compute   | Baixos                          | Altos (2 OCPU / 12 GB)          |
+| Ideal para            | Apps web simples + CI/CD        | Servidor completo + aprendizado |
 
 ## Evidências
-![Página oficial dos recursos Always Free](../images/01-always-free.png)
-
-> **Ação necessária**: Tire o print da página oficial e salve como `images/01-always-free.png`.
-
-## Problemas encontrados e soluções
-- Nenhum problema técnico neste capítulo (apenas pesquisa documental).
+![Página oficial do Render Free](../images/01-render-free.png)
 
 ## Fontes consultadas
-- [Oracle Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
-- [Oracle Cloud Free Tier](https://www.oracle.com/cloud/free/)
-- [Oracle Free Tier FAQ](https://www.oracle.com/cloud/free/faq/)
-- [Service Limits](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/servicelimits.htm)
-- Uso de IA: Grok (xAI) para estruturação, pesquisa e orientação do capítulo
+- [Render Documentation](https://render.com/docs)
+- [Render Pricing](https://render.com/pricing)
+- Uso de IA: Grok (xAI)
 
 ## Conclusão do capítulo
-Compreendi a diferença clara entre Always Free e o crédito de teste, os limites atuais (especialmente a redução do ARM para 2 OCPUs/12 GB), os riscos de cobrança e como evitá-los. Estou preparado para criar a conta com as devidas proteções no próximo capítulo.
+O Render Free Tier atende perfeitamente ao objetivo do trabalho (app no ar + deploy automático), com a vantagem de não exigir cartão. As limitações (principalmente o cold start) foram compreendidas e serão documentadas.
