@@ -1,0 +1,16 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python - <<'PY'\nfrom importlib\\.util import find_spec\nfor module in \\('reportlab', 'weasyprint', 'markdown', 'mistune', 'fpdf'\\):\n    print\\(f'\\{module\\}: \\{bool\\(find_spec\\(module\\)\\)\\}'\\)\nPY\nprintf '%s\\\\n' '--- renderers ---'; for tool in chromium chromium-browser google-chrome firefox libreoffice; do command -v \"\\$tool\" \\|\\| true; done\nprintf '%s\\\\n' '--- package managers ---'; command -v apt-get \\|\\| true; command -v npm \\|\\| true$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python - <<'PY'\nimport mistune\nprint\\('mistune', mistune\\.__version__\\)\nmd = mistune\\.create_markdown\\(renderer='ast', plugins=\\['table'\\]\\)\nprint\\(md\\('\\| A \\| B \\|\\\\n\\|---\\|---\\|\\\\n\\| 1 \\| 2 \\|'\\)\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -m pip install --user reportlab$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
